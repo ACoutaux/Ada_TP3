@@ -9,7 +9,7 @@ use ada.numerics.float_random;
 
 procedure main_tp3 is 
 
-    read_length, cpt_loop : INTEGER;   
+    read_length, cpt_loop_p, cpt_loop_c : INTEGER;   
     My_File  : FILE_TYPE; 
     my_buf : Shared_Items;
     
@@ -23,13 +23,21 @@ procedure main_tp3 is
         val : INTEGER;
 
         begin
-        reset(G);
-        f := Random(G); -- test à 1
-        val := Integer(val);
-        my_buf.Set(val);
-        put("Producers puts"); 
-        put(val,2);
-        New_Line (1);
+        cpt_loop_p := 0;
+
+        loop      
+            exit when cpt_loop_p = 10;
+            delay(1.0);
+            reset(G);
+            f := Random(G); -- test à 1
+            val := Integer(f*10.0);
+            my_buf.Set(val);
+            put("Producers puts"); 
+            put(val,3);
+            New_Line (1);
+            cpt_loop_p := cpt_loop_p + 1;       
+        end loop;
+        
     end Producer;
 
     task body Consumer is 
@@ -37,14 +45,24 @@ procedure main_tp3 is
         val : INTEGER;
 
         begin
-        my_buf.Get (val);
-        put("Consumer gets");
-        put(val,2);
-        New_Line (1);
+        cpt_loop_c := 0;
+        
+        loop
+        exit when cpt_loop_c = 10;
+            cpt_loop_c := cpt_loop_c + 1;
+            delay(1.0);
+            my_buf.Get (val);
+            put("Consumer gets");
+            put(val,3);
+            New_Line (1);
+        end loop;
     end Consumer;
 
-    Producers : array(1..10) of producer;
-    Consumers : array(1..10) of consumer;
+    type C is access Consumer;
+    type P is access Producer;
+     
+    P1 : P := new Producer;
+    C1 : C := new Consumer;
 
 begin
 
@@ -61,4 +79,4 @@ begin
 end main_tp3;
 
 -- -------------  MODIFS -------------------------
--- new _ pointeur sur tâche pour les tasks ADA
+-- Importation params
