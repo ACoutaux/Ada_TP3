@@ -17,6 +17,11 @@ package body Protected_Buffer is
             Buffer (Last) := I;
             Size := Size + 1;
         end Set;
+        entry Get_size (I : out Natural) -- return current size of buffer
+        when true is
+        begin
+            I:=size;
+        end Get_size;
     end Shared_Items;
 end Protected_Buffer;
 
