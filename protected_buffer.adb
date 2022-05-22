@@ -2,7 +2,7 @@ package body Protected_Buffer is
 
     protected body Shared_Items is 
         entry Get (I : out Integer) 
-        when Size /= 0 is
+        when true is
         begin
             I := Buffer (First);
             First :=
@@ -10,7 +10,7 @@ package body Protected_Buffer is
             Size := Size - 1;
         end Get;
         entry Set (I : in Integer)
-        when Size /= Length is
+        when true is
         begin
             Last :=
             (Last + 1) mod Length;
@@ -24,5 +24,3 @@ package body Protected_Buffer is
         end Get_size;
     end Shared_Items;
 end Protected_Buffer;
-
-
