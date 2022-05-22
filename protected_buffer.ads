@@ -1,12 +1,10 @@
 package Protected_Buffer is
 
-
-   --Length : constraint := 5; -- importer length du buffer en I/O
-
    type Items is array (Natural range <>) of Integer;
    type Items_Access is access Items;
    
    protected type Shared_Items (Length : Natural) is
+      entry Get_size (I : out Natural); -- pour obtenir la taille du buffer
       entry Get (I : out Integer); 
       entry Set (I : in Integer); 
       private
