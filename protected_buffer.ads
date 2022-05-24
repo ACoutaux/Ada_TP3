@@ -20,8 +20,11 @@ package Protected_Buffer is
    type Shared_Items_Access is access Shared_Items;
    
    Full_Buffer_Exception : exception;
+   Empty_Buffer_Exception : exception;
    
    procedure Add (Items : Shared_Items_Access; Value : Integer);
    procedure Offer (Items : Shared_Items_Access; Value : Integer; Deadline : Time);
+   function Remove (Items : Shared_Items_Access) return Integer;
+   function Poll (Items : Shared_Items_Access; Deadline : Time) return Integer;
 
 end Protected_Buffer;
