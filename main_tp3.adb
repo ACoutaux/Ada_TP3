@@ -22,74 +22,106 @@ procedure main_tp3 is
     Buffer_size : Natural;
 
     task type Producer is 
-        entry non_blocked;
-        entry blocked;
-        entry timed;
-    end Producer;
+       entry Initialize (P : Time_Span; D : Time; S : Sem_Type);
+<    end Producer;
 
     task type Consumer is
-        entry non_blocked;
-        entry blocked;
-        entry timed;
+       entry Initialize (P : Time_Span; D : Time; S : Sem_Type);
     end Consumer;
-
-
+    
     task body Producer is
 
-        G : generator;
-        f : FLOAT;
-        val : INTEGER;
-
-        begin
-
-        select
-            accept non_blocked do
-                for i in 1 .. 10 loop
-                    reset(G);
-                    f := Random(G);
-                    val := Integer(f*10.0);
-                    Items.Set(val);
-                    put("Producers puts"); 
-                    put(val,3);
-                    New_Line (1);
-                    delay(1.0);   
-                end loop;
-            end non_blocked;
-        or
-            accept blocked do
-                for i in 1 .. 10 loop
-                    reset(G);
-                    f := Random(G);
-                    val := Integer(f*10.0);
-                    Items.Get(Buffer_size);
-                    while Buffer_size < Items.Length loop
-                        null;
-                    end loop;
-                    Items.Set(val);
-                    put("Producers puts"); 
-                    put(val,3);
-                    New_Line (1);
-                    delay(1.0);   
-                end loop;
-            end blocked;
-        or
-            accept timed do
-                for i in 1 .. 10 loop
-                    reset(G);
-                    f := Random(G);
-                    val := Integer(f*10.0);
-                    Items.Get_size (Buffer_size);
-                    delay until next_time; --Buffer_size < Items.Length or 
-                    Items.Set(val);
-                    put("Producers puts"); 
-                    put(val,3);
-                    New_Line (1);
-                    delay(1.0);   
-                end loop;
-            end timed;
-        end select;
+        G : Generator;
+        F : Float;
+        Value : Integer;
+        Period : Time_Span;
+        Deadline : Time;
+        Semantic : Sem_Type;
         
+    begin
+       Reset (G); -- Faire une seule fois
+       accept Initialize (P : Time_Span; D : Time; S : Sem_Type) do
+          Period := P;
+          Deadline := D;
+          Semantic := S;
+       end Initialize;
+       
+       loop
+          F := Random (G);
+          Value := Integer(10.0 * F);
+          Deadline := Deadline + Period;
+          case Semantic is
+             when Blocking =>
+                Items.Put (Value);
+             when Non_Blocking =>
+                Add (Items, Value);
+                
+             when Timed =>
+                select
+                   Items.Put(Value);
+                or
+                   delay until Deadline;
+                end select;
+          end case;
+       end loop;
     end Producer;
+
+    --  task body Producer is
+
+    --      G : generator;
+    --      f : FLOAT;
+    --      val : INTEGER;
+
+    --      begin
+
+    --      select
+    --          accept non_blocked do
+    --              for i in 1 .. 10 loop
+    --                  reset(G);
+    --                  f := Random(G);
+    --                  val := Integer(f*10.0);
+    --                  Items.Set(val);
+    --                  put("Producers puts"); 
+    --                  put(val,3);
+    --                  New_Line (1);
+    --                  delay(1.0);   
+    --              end loop;
+    --          end non_blocked;
+    --      or
+    --          accept blocked do
+    --              for i in 1 .. 10 loop
+    --                  reset(G);
+    --                  f := Random(G);
+    --                  val := Integer(f*10.0);
+    --                  Items.Get(Buffer_size);
+    --                  while Buffer_size < Items.Length loop
+    --                      null;
+    --                  end loop;
+    --                  Items.Set(val);
+    --                  put("Producers puts"); 
+    --                  put(val,3);
+    --                  New_Line (1);
+    --                  delay(1.0);   
+    --              end loop;
+    --          end blocked;
+    --      or
+    --          accept timed do
+    --              for i in 1 .. 10 loop
+    --                  reset(G);
+    --                  f := Random(G);
+    --                  val := Integer(f*10.0);
+    --                  Items.Get_size (Buffer_size);
+    --                  delay until next_time; --Buffer_size < Items.Length or 
+    --                  Items.Set(val);
+    --                  put("Producers puts"); 
+    --                  put(val,3);
+    --                  New_Line (1);
+    --                  delay(1.0);   
+    --              end loop;
+    --          end timed;
+    --      end select;
+        
+    --  end Producer;
 
     task body Consumer is 
 
@@ -163,8 +195,8 @@ begin
     Items := new Shared_Items (read_length - 1);
     
     for I in 1 .. number_producters loop
-      P := new Producer;
-      P.non_blocked;
+       P := new Producer;
+       P.Initialize ();
     end loop;
     for I in 1 .. number_consumers loop
       C := new Consumer;

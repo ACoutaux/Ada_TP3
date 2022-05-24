@@ -2,25 +2,39 @@ package body Protected_Buffer is
 
     protected body Shared_Items is 
         entry Get (I : out Integer) 
-        when true is
+        when Size > 0 is
         begin
             I := Buffer (First);
-            First :=
-            (First + 1) mod Length;
+            First := (First + 1) mod Length;
             Size := Size - 1;
         end Get;
-        entry Set (I : in Integer)
-        when true is
+        entry Put (I : in Integer)
+        when Size < Length is
         begin
-            Last :=
-            (Last + 1) mod Length;
+            Last := (Last + 1) mod Length;
             Buffer (Last) := I;
             Size := Size + 1;
-        end Set;
-        entry Get_size (I : out Natural) -- return current size of buffer
-        when true is
-        begin
-            I:=size;
-        end Get_size;
+        end Put;
     end Shared_Items;
+    
+    procedure Add (Items : Shared_Items_Access; Value : Integer) is
+    begin
+       select
+          Items.Put (Value);
+       else
+          raise Full_Buffer_Exception;
+       end select;
+    end Add;
+    
+    procedure Offer (Items : Shared_Items_Access; Value : Integer; Deadline : Time) 
+    is
+    begin
+       select 
+          Items.Put (Value);
+       or
+          delay until Deadline;
+          raise Full_Buffer_Exception;
+       end select;
+    end Offer;
+    
 end Protected_Buffer;

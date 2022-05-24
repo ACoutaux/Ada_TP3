@@ -1,12 +1,15 @@
-package Protected_Buffer is
+with Ada.Calendar; use Ada.Calendar;
 
+package Protected_Buffer is
+   
+   type Sem_Type is (Blocking, Non_Blocking, Timed);
+   
    type Items is array (Natural range <>) of Integer;
    type Items_Access is access Items;
    
    protected type Shared_Items (Length : Natural) is
-      entry Get_size (I : out Natural); -- pour obtenir la taille du buffer
       entry Get (I : out Integer); 
-      entry Set (I : in Integer); 
+      entry Put (I : in Integer); 
       private
       First : Natural := 0;
       Last : Natural := Length - 1;
@@ -15,5 +18,10 @@ package Protected_Buffer is
    end Shared_Items;
 
    type Shared_Items_Access is access Shared_Items;
+   
+   Full_Buffer_Exception : exception;
+   
+   procedure Add (Items : Shared_Items_Access; Value : Integer);
+   procedure Offer (Items : Shared_Items_Access; Value : Integer; Deadline : Time);
 
 end Protected_Buffer;
