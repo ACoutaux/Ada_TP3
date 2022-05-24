@@ -19,11 +19,11 @@ package body Protected_Buffer is
     
     procedure Add (Items : Shared_Items_Access; Value : Integer) is
     begin
-       select
-          Items.Put (Value);
-       else
-          raise Full_Buffer_Exception;
-       end select;
+        select
+            Items.Put (Value);
+        else
+            raise Full_Buffer_Exception;
+        end select;
     end Add;
     
     procedure Offer (Items : Shared_Items_Access; Value : Integer; Deadline : Time) 
@@ -36,5 +36,32 @@ package body Protected_Buffer is
           raise Full_Buffer_Exception;
        end select;
     end Offer;
+
+    function Remove (Items : Shared_Items_Access) 
+    return Integer
+    is
+    Value : Integer;
+    begin
+        select
+            Items.Get (Value);
+        else
+            raise Empty_Buffer_Exception;
+        end select;
+        return Value;
+    end Remove;
+
+    function Poll (Items : Shared_Items_Access; Deadline : Time)
+    return Integer
+    is
+    Value : Integer;
+    begin
+        select
+            Items.Get (Value);
+        or
+            delay until Deadline;
+            raise Empty_Buffer_Exception;
+        end select;
+        return Value;
+    end Poll;
     
 end Protected_Buffer;
