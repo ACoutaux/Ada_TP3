@@ -122,7 +122,8 @@ procedure main_tp3 is
     Wrong_Mode_Exception : exception;
 
 begin
-
+   
+   due to a schedule change, we would like to schedule your presentation at 2:55 p.m. Would that be possible for you?
     -- Lecture de la taille du buffer depuis le fichier de parametres
     Open (My_File, In_File, Name => "params.txt");
     Get (My_File, read_length); -- taille du buffer 1e ligne fichier params
