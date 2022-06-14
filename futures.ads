@@ -3,11 +3,6 @@ package Futures is
    
    type Callable is tagged null record;
    
-   type Periodic_Callable is new Callable with
-      record
-         Period : Duration;
-      end record;
-   
    --  Pointer to any deriived type of Callable
    type Callable_Access is access all Callable'Class;
    
@@ -19,5 +14,12 @@ package Futures is
       Result    : Result_Access;
       Completed : Boolean;
    end record;
+
+   procedure Run(C : Callable; R : out Result_Access);
+
+   type Periodic_Callable is new Callable with
+      record
+         Period : Duration;
+      end record;
    
 end Futures;

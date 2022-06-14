@@ -1,5 +1,5 @@
-with Runnables;
-use Runnables;
+with Futures; use Futures;
+with Jobs; use Jobs;
 
 package Thread_Pools is
    
@@ -9,8 +9,8 @@ package Thread_Pools is
       Size : Natural;
    end record;
 
-   task type Exec_Runnable is
-      entry Initialize (R: Runnable);
-   end Exec_Runnable;
+   task type Pool_thread is
+      entry Initialize (J : Job_Callable);
+   end Pool_thread;
 
 end Thread_Pools;
