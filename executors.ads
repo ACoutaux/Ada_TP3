@@ -4,11 +4,13 @@ with Futures; use Futures;
 
 package Executors is
 
-   type Executor is record
+   protected type Executor is 
+      Procedure Init(F : in Buffer_Access; K : in Duration; P : in Thread_Pool_Access);
+      private
       Futures : Buffer_Access;
       Keep_Alive_Time : Duration;
       Pool : Thread_Pool;
-   end record;
+   end Executor;
 
    function submit(E : Executor; C : Callable_Access) return Future;
 
