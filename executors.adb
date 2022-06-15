@@ -5,7 +5,7 @@ with Futures; use Futures;
 package body Executors is
 
     protected body Executor is
-        procedure Init(F : in Buffer_Access; K : in Duration; P : in Thread_Pool_Access) is
+        procedure Init(F : in Buffer_Access; K : in Integer; P : in Thread_Pool_Access) is
         begin
             Futures := F;
             Keep_Alive_Time := K;
@@ -15,7 +15,7 @@ package body Executors is
     end Executor;
 
     function submit(E : Executor; C : Callable_Access) return Future is
-    f : Future; --pour tester les specs
+    f : Future; --non implementee / pour tester les specs
     begin
         return f;
     end submit;

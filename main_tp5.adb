@@ -1,7 +1,7 @@
 with Future_Protected_Buffers; use Future_Protected_Buffers;
 with Ada.Text_IO; use Ada.Text_IO;
 with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
---with Executors; use Executors;
+with Executors; use Executors;
 with Thread_Pools; use Thread_Pools;
 
 procedure main_tp5 is
@@ -14,7 +14,7 @@ procedure main_tp5 is
     job_table_size : Integer;
     My_File : File_Type;
 
-    --My_Executor : Executor;
+    My_Executor : Executor;
     My_Thread_Pool : Thread_Pool_Access;
     My_Buf : Buffer_Access;
 
@@ -31,6 +31,6 @@ begin
     --Init de Thread_Pool et Executor avec les valeurs du fichier de paramètres  
     My_Thread_Pool.Init(core_pool_size,max_pool_size,0);
 
-    --My_Executor.Init(My_Buf,keep_alive_time,My_Thread_Pool);
+    My_Executor.Init(My_Buf,keep_alive_time,My_Thread_Pool);
 
 end main_tp5;
