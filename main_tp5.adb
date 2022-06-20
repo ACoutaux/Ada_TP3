@@ -6,13 +6,13 @@ with Thread_Pools; use Thread_Pools;
 
 procedure main_tp5 is
 
-    core_pool_size : Integer;
-    max_pool_size : Integer;
-    pool_size : Integer;
-    keep_alive_time : Integer;
-    period : Integer;
-    job_table_size : Integer;
-    exec_time : Integer;
+    Core_Pool_Size : Integer;
+    Max_Pool_Size : Integer;
+    Pool_Size : Integer;
+    Keep_Alive_Time : Integer;
+    Period : Integer;
+    Job_Table_Size : Integer;
+    Exec_Time : Integer;
 
     My_File : File_Type;
 
@@ -20,25 +20,18 @@ procedure main_tp5 is
     My_Thread_Pool : Thread_Pool_Access;
     My_Buf : Buffer_Access;
 
-
-
 begin
 
     Open(My_File, In_File, Name => "params_tp5.txt");
-    Get(My_File, core_pool_size);
-    Get(My_File,max_pool_size);
-    Get(My_File,pool_size);
-    Get(My_File,keep_alive_time);
-    Get(My_File,period);
-    Get(My_File,job_table_size);
+    Get(My_File, Core_Pool_Size);
+    Get(My_File, Max_Pool_Size);
+    Get(My_File, Pool_Size);
+    Get(My_File, Keep_Alive_Time);
+    Get(My_File, Period);
+    Get(My_File, Job_Table_Size);
 
-    --Init de Thread_Pool  
-    My_Thread_Pool.Init(core_pool_size,max_pool_size);
-
-
-
-    My_Executor.Init(My_Buf,keep_alive_time,My_Thread_Pool);
-
-
+    -- Init de Thread_Pool  
+    My_Thread_Pool.Init(Core_Pool_Size, Max_Pool_Size);
+    My_Executor.Init(My_Buf, Keep_Alive_Time, My_Thread_Pool);
 
 end main_tp5;

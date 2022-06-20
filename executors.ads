@@ -5,15 +5,16 @@ with Futures; use Futures;
 package Executors is
 
    protected type Executor is 
-      Procedure Init(F : in Buffer_Access; K : Integer; P : in Thread_Pool_Access);
-      private
+      procedure Init(F : Buffer_Access; K : Integer; P : Thread_Pool_Access);
+      procedure Shutdown;
+      procedure Create
+        (C : Callable_Access; F : Future; Force : Boolean; Done : out Boolean);
+   private
       Futures : Buffer_Access;
       Keep_Alive_Time : Integer;
-      Pool : Thread_Pool_Access := new Thread_Pool; --must declare new thread_pool to avoid limited type error
-
-      --Procedure get_callable_result(F : in Future; R : out Result_Access);
-      Procedure executor_shutdown;
-
+      Pool : Thread_Pool_Access;
+      -- must declare new thread_pool to avoid limited type error
+      -- procedure get_callable_result(F : in Future; R : out Result_Access);
    end Executor;
 
    type Executor_Access is access Executor;

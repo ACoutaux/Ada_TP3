@@ -6,31 +6,39 @@ with Jobs; use Jobs;
 package body Executors is
 
     protected body Executor is
-        procedure Init(F : in Buffer_Access; K : in Integer; P : in Thread_Pool_Access) is
-        begin
-            Futures := F;
-            Keep_Alive_Time := K;
-            Pool := P;
-        end Init;
+       procedure Init(F : Buffer_Access; K : Integer; P : Thread_Pool_Access) is
+       begin
+          Futures := F;
+          Keep_Alive_Time := K;
+          Pool := P;
+       end Init;
        
-        --procedure get_callable_result(F : in Future; R : out Result_Access) is
-
-        Procedure executor_shutdown is
-        begin
-            Pool.Pool_Shutdown;
-        end executor_shutdown;
+       --procedure get_callable_result(F : in Future; R : out Result_Access) is
+       
+       procedure Shutdown is
+       begin
+          Pool.Shutdown;
+       end Shutdown;
+       
+       procedure Create
+         (C : Callable_Access; F : Future; Force : Boolean; Done : out Boolean)
+       is
+       begin
+          Pool.Create(C, F, Force, Done);
+       end Create;
 
     end Executor;
 
-    function submit(E : Executor_Access; C : Callable_Access) return Future is
-        f : Future;
-        J : Job_Callable;
+    function Submit(E : Executor_Access; C : Callable_Access) return Future is
+        F : Future;
+        Done : Boolean;
     begin
-        f.Callable := C;
-        f.Completed := False;
-        if (E.Pool.Create(J,f,False)) then
-            return f;
+        F.Callable := C;
+        F.Completed := False;
+        E.Create(C, F, False, Done);
+        if (Done) then
+            return F;
         end if;
-        return f;
+        return F;
     end submit;
 end Executors;
