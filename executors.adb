@@ -1,6 +1,7 @@
 with Future_Protected_Buffers; use Future_Protected_Buffers;
 with Thread_Pools; use Thread_Pools;
 with Futures; use Futures;
+with Jobs; use Jobs;
 
 package body Executors is
 
@@ -12,11 +13,24 @@ package body Executors is
             Pool := P;
         end Init;
        
+        --procedure get_callable_result(F : in Future; R : out Result_Access) is
+
+        Procedure executor_shutdown is
+        begin
+            Pool.Pool_Shutdown;
+        end executor_shutdown;
+
     end Executor;
 
-    function submit(E : Executor; C : Callable_Access) return Future is
-    f : Future; --non implementee / pour tester les specs
+    function submit(E : Executor_Access; C : Callable_Access) return Future is
+        f : Future;
+        J : Job_Callable;
     begin
+        f.Callable := C;
+        f.Completed := False;
+        if (E.Pool.Create(J,f,False)) then
+            return f;
+        end if;
         return f;
     end submit;
 end Executors;

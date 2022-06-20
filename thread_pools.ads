@@ -6,6 +6,8 @@ package Thread_Pools is
    protected type Thread_Pool is 
 
       procedure Init(C : in Integer; M : in Integer);
+      procedure Pool_Shutdown;
+
       private
       Core_Pool_Size : Natural;
       Max_Pool_Size : Natural;
@@ -13,7 +15,6 @@ package Thread_Pools is
       Size : Integer := 0;
 
       procedure Create(J : Job_Callable; F : Future; Force : Boolean);
-      procedure Pool_Shutdown;
       procedure Remove;
 
    end Thread_Pool;

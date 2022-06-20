@@ -15,7 +15,7 @@ package Futures is
       Completed : Boolean;
    end record;
 
-   procedure Run(C : Callable; R : out Result_Access);
+   Procedure Run(C : Callable; R : out Result_Access);
 
    type Periodic_Callable is new Callable with
       record

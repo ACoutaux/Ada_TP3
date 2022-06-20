@@ -1,6 +1,5 @@
 
 package body Futures is
-   
 
    procedure Run(C : Callable; R : out Result_Access) is
    begin

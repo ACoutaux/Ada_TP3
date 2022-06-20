@@ -10,8 +10,14 @@ package Executors is
       Futures : Buffer_Access;
       Keep_Alive_Time : Integer;
       Pool : Thread_Pool_Access := new Thread_Pool; --must declare new thread_pool to avoid limited type error
+
+      --Procedure get_callable_result(F : in Future; R : out Result_Access);
+      Procedure executor_shutdown;
+
    end Executor;
 
-   function submit(E : Executor; C : Callable_Access) return Future;
+   type Executor_Access is access Executor;
+
+   function submit(E : Executor_Access; C : Callable_Access) return Future;
 
 end Executors;
