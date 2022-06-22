@@ -5,7 +5,7 @@ package Thread_Pools is
    
    protected type Thread_Pool is 
 
-      procedure Init(C : Integer; M : Integer);
+      procedure Init(C : in Integer; M : in Integer);
       procedure Shutdown;
 
       procedure Create

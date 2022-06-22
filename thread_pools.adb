@@ -1,7 +1,7 @@
 package body Thread_Pools is
 
    protected body Thread_Pool is
-      procedure Init (C : Integer; M : Integer) is
+      procedure Init (C : in Integer; M : in Integer) is
       begin
          Core_Pool_Size := C;
          Max_Pool_Size := M;
