@@ -47,6 +47,10 @@ begin
         Callable := new Job_Callable;
         Get(My_File,Exec_time);
         Callable.Exec_Time := Duration(Exec_time);
+        Put("Job with exec_time ");
+        Put(Integer(Exec_time),2);
+        Put(" Submitted");
+        New_Line;
         F := submit(My_Executor,Callable_Access(Callable));
     end loop;
 

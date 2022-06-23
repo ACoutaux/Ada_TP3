@@ -12,6 +12,8 @@ package Thread_Pools is
         (C : Callable_Access; F : Future; Force : Boolean; Done : out Boolean);
       procedure Remove;
 
+      procedure Get_Shutdown(S : out Boolean);
+
    private
       Core_Pool_Size : Natural;
       Max_Pool_Size : Natural;
@@ -26,5 +28,6 @@ package Thread_Pools is
    end Pool_thread;
 
    type Pool_thread_Access is access Pool_thread;
+
    
 end Thread_Pools;

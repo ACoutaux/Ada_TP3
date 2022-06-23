@@ -36,12 +36,25 @@ package body Thread_Pools is
             Size := Size - 1;
          end if;
       end Remove;
+
+      procedure Get_Shutdown(S : out Boolean) is
+      begin
+         S := Shutdown_Activated;
+      end Get_Shutdown;
+
    end Thread_Pool;
 
    task body Pool_thread is
+      R : Result_Access;
+      P : Thread_Pool_Access;
+      S : Boolean := False;
    begin
       accept Initialize (C : Callable_Access) do
-         null;
+         loop
+            C.Run(R);
+            P.Get_Shutdown(S);
+            exit when S;
+         end loop;
       end Initialize;
    end Pool_Thread;
 

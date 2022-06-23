@@ -9,12 +9,11 @@ package Futures is
    type Result is tagged null record;
    type Result_Access is access all Result'Class;
    
-   protected type Future is 
-   private
+   type Future is record   
       Callable  : Callable_Access;
       Result    : Result_Access;
       Completed : Boolean;
-   end Future;
+   end record;
 
    Procedure Run(C : Callable; R : out Result_Access);
 
@@ -22,5 +21,5 @@ package Futures is
       record
          Period : Duration;
       end record;
-   
+         
 end Futures;
