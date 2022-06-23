@@ -9,7 +9,7 @@ package body Jobs is
         Put("Job with exec_time ");
         Put(Integer(J.Exec_Time),2);
         Put(" is executing");
-
+        New_Line;
         R := null;
     end run;
 
