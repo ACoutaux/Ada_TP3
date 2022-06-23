@@ -9,17 +9,25 @@ package Futures is
    type Result is tagged null record;
    type Result_Access is access all Result'Class;
    
-   type Future is record   
+   protected type Protected_Future is
+      entry Get_Result (R : out Result_Access);
+      procedure Set_Result (R : in Result_Access);
+      procedure Set_Completed (C : Boolean);
+      procedure Set_Callable(C : Callable_Access);
+      procedure Get_Callable(C : out Callable_Access);
+   private   
       Callable  : Callable_Access;
       Result    : Result_Access;
       Completed : Boolean;
-   end record;
+   end Protected_Future;
+
+   type Future is access Protected_Future;
 
    Procedure Run(C : Callable; R : out Result_Access);
 
    type Periodic_Callable is new Callable with
-      record
-         Period : Duration;
-      end record;
-         
+   record
+      Period : Duration;
+   end record;
+            
 end Futures;

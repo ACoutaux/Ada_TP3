@@ -1,3 +1,4 @@
+with Future_Protected_Buffers; use Future_Protected_Buffers;
 with Futures; use Futures;
 with Jobs; use Jobs;
 
@@ -9,7 +10,7 @@ package Thread_Pools is
       procedure Shutdown;
 
       procedure Create
-        (C : Callable_Access; F : Future; Force : Boolean; Done : out Boolean);
+        (F : Future; Force : Boolean; Done : out Boolean; Buffer : Buffer_Access);
       procedure Remove;
 
       procedure Get_Shutdown(S : out Boolean);
@@ -17,14 +18,14 @@ package Thread_Pools is
    private
       Core_Pool_Size : Natural;
       Max_Pool_Size : Natural;
-      Shutdown_Activated : Boolean;
+      Shutdown_Activated : Boolean := False;
       Size : Integer := 0;
    end Thread_Pool;
 
    type Thread_Pool_Access is access Thread_Pool;
 
    task type Pool_thread is
-      entry Initialize (C : Callable_Access);
+      entry Initialize (F: Future; Buffer : Buffer_Access);
    end Pool_thread;
 
    type Pool_thread_Access is access Pool_thread;

@@ -8,7 +8,7 @@ package Executors is
       procedure Init(F : Buffer_Access; K : Integer; P : Thread_Pool_Access);
       procedure Shutdown;
       procedure Create
-        (C : Callable_Access; F : Future; Force : Boolean; Done : out Boolean);
+        (F : Future; Force : Boolean; Done : out Boolean);
    private
       Futures : Buffer_Access;
       Keep_Alive_Time : Integer;

@@ -1,3 +1,5 @@
+with Future_Protected_Buffers; use Future_Protected_Buffers;
+
 package body Thread_Pools is
 
    protected body Thread_Pool is
@@ -8,7 +10,7 @@ package body Thread_Pools is
       end Init;
 
       procedure Create 
-        (C : Callable_Access; F : Future; Force : Boolean; Done : out Boolean)
+        (F : Future; Force : Boolean; Done : out Boolean; Buffer : Buffer_Access)
       is
          Thread : Pool_Thread_Access;
       begin
@@ -19,7 +21,7 @@ package body Thread_Pools is
             Thread := new Pool_Thread;
             Size := Size + 1;
             Done := True;
-            Thread.Initialize(C);
+            Thread.Initialize(F,Buffer);
          end if;
       end Create;
 
@@ -46,16 +48,25 @@ package body Thread_Pools is
 
    task body Pool_thread is
       R : Result_Access;
-      P : Thread_Pool_Access;
       S : Boolean := False;
+      Current_Future : Future;
+      Current_Callable : Callable_Access;
+      Future_Buffer : Buffer_Access;
    begin
-      accept Initialize (C : Callable_Access) do
-         loop
-            C.Run(R);
-            P.Get_Shutdown(S);
-            exit when S;
-         end loop;
+      accept Initialize (F : Future; Buffer : Buffer_Access) do
+         Current_Future := F;
+         Future_Buffer := Buffer;
       end Initialize;
+      loop
+         Current_Future.Get_Callable (Current_Callable);
+         Current_Callable.Run(R);
+
+         --P.Get_Shutdown(S);
+         Current_Future.Set_Result(R);
+         Future_Buffer.Get(Current_Future);
+
+         --exit when S;
+      end loop;
    end Pool_Thread;
 
 end Thread_Pools;

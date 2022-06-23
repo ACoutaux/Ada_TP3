@@ -21,21 +21,21 @@ package body Executors is
        end Shutdown;
        
        procedure Create
-         (C : Callable_Access; F : Future; Force : Boolean; Done : out Boolean)
+         (F : Future; Force : Boolean; Done : out Boolean)
        is
        begin
-          Pool.Create(C, F, Force, Done);
+          Pool.Create(F, Force, Done,Futures);
        end Create;
 
     end Executor;
 
     function Submit(E : Executor_Access; C : Callable_Access) return Future is
-        F : Future;
+        F : Future := new Protected_Future;
         Done : Boolean;
     begin
-        F.Callable := C;
-        F.Completed := False;
-        E.Create(C, F, False, Done);
+        F.Set_Callable(C);
+        F.Set_Completed(False);
+        E.Create(F, False, Done);
         if (Done) then
             return F;
         end if;
