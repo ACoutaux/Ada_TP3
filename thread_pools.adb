@@ -49,6 +49,7 @@ package body Thread_Pools is
    task body Pool_thread is
       R : Result_Access;
       S : Boolean := False;
+      P : Thread_Pool_Access;
       Current_Future : Future;
       Current_Callable : Callable_Access;
       Future_Buffer : Buffer_Access;

@@ -17,7 +17,7 @@ package body Executors is
        
        procedure Shutdown is
        begin
-          Pool.Shutdown;
+            Pool.Shutdown;
        end Shutdown;
        
        procedure Create
@@ -27,14 +27,22 @@ package body Executors is
           Pool.Create(F, Force, Done,Futures);
        end Create;
 
+        procedure Get_Pool(P : out Thread_Pool_Access) is 
+        begin
+            P := Pool;
+        end Get_Pool;
+
+
     end Executor;
 
     function Submit(E : Executor_Access; C : Callable_Access) return Future is
         F : Future := new Protected_Future;
         Done : Boolean;
+        P : Thread_Pool_Access;
     begin
         F.Set_Callable(C);
         F.Set_Completed(False);
+        E.Get_Pool(P);
         E.Create(F, False, Done);
         if (Done) then
             return F;

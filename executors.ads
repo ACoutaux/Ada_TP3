@@ -9,12 +9,11 @@ package Executors is
       procedure Shutdown;
       procedure Create
         (F : Future; Force : Boolean; Done : out Boolean);
+      procedure Get_Pool(P : out Thread_Pool_Access);
    private
       Futures : Buffer_Access;
       Keep_Alive_Time : Integer;
       Pool : Thread_Pool_Access;
-      -- must declare new thread_pool to avoid limited type error
-      -- procedure get_callable_result(F : in Future; R : out Result_Access);
    end Executor;
 
    type Executor_Access is access Executor;
