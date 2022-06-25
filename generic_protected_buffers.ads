@@ -8,9 +8,11 @@ package Generic_Protected_Buffers is
    type Element_Table_Access is access Element_Table;
    
    protected type G_Buffer (Length : Natural) is
-      entry Get (E : out Element); 
-      entry Put (E : in Element); 
+      entry Get (E : out Element; Done : out Boolean); 
+      entry Put (E : in Element; Done : out Boolean); 
+      procedure Reinit_Done(D : Boolean);
       private
+      Done : Boolean := False;
       First : Natural := 0;
       Last : Natural := Length - 1;
       Size : Natural := 0;

@@ -52,6 +52,7 @@ package body Executors is
         Done : Boolean;
         P : Thread_Pool_Access;
         B : Buffer_Access;
+        D : Boolean;
     begin
         F.Set_Callable(C);
         F.Set_Completed(False);
@@ -61,13 +62,18 @@ package body Executors is
         if (Done) then
             return F;
         end if;
-        B.Put(F);
-        --B.Get(Pop_F);
-        --if (Pop_F/=Null) then
-        --    B.Put(F);
-        --    F := Pop_F;
-        --end if;
-        --E.Create(F,True,Done);
-        --return F;
+        B.Put(F,D);
+        B.Reinit_Done (False);
+        if (D) then
+            return F;
+        end if;
+        B.Get(Pop_F,D);
+        if (D) then
+            B.Put(F,D);
+            F := Pop_F;
+        end if;
+        B.Reinit_Done(False);
+        E.Create(F,True,Done);
+        return F;
     end submit;
 end Executors;
