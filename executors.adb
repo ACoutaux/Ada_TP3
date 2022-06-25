@@ -32,21 +32,42 @@ package body Executors is
             P := Pool;
         end Get_Pool;
 
+        procedure Get_Callable_Result(F : Future; R : out Result_Access) is
+        begin
+            F.Get_Result (R);
+        end Get_Callable_Result;
+
+        procedure Get_Buffer(B : out Buffer_Access) is
+        begin
+            B := Futures;
+        end Get_Buffer;
 
     end Executor;
 
+
+
     function Submit(E : Executor_Access; C : Callable_Access) return Future is
         F : Future := new Protected_Future;
+        Pop_F : Future;
         Done : Boolean;
         P : Thread_Pool_Access;
+        B : Buffer_Access;
     begin
         F.Set_Callable(C);
         F.Set_Completed(False);
         E.Get_Pool(P);
         E.Create(F, False, Done);
+        E.Get_Buffer (B);
         if (Done) then
             return F;
         end if;
-        return F;
+        B.Put(F);
+        --B.Get(Pop_F);
+        --if (Pop_F/=Null) then
+        --    B.Put(F);
+        --    F := Pop_F;
+        --end if;
+        --E.Create(F,True,Done);
+        --return F;
     end submit;
 end Executors;

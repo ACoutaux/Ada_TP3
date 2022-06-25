@@ -16,7 +16,7 @@ package body Thread_Pools is
       begin
          Done := False;
          if (Size < Core_Pool_Size) or else
-           (Force and then Size < Max_Pool_Size)
+           (Force and Size < Max_Pool_Size)
          then
             Thread := new Pool_Thread;
             Size := Size + 1;
@@ -49,7 +49,7 @@ package body Thread_Pools is
    task body Pool_thread is
       R : Result_Access;
       S : Boolean := False;
-      P : Thread_Pool_Access;
+      --P : Thread_Pool_Access;
       Current_Future : Future;
       Current_Callable : Callable_Access;
       Future_Buffer : Buffer_Access;

@@ -10,6 +10,9 @@ package Executors is
       procedure Create
         (F : Future; Force : Boolean; Done : out Boolean);
       procedure Get_Pool(P : out Thread_Pool_Access);
+      procedure Get_Callable_Result(F : Future; R : out Result_Access);
+      procedure Get_Buffer(B : out Buffer_Access);
+      
    private
       Futures : Buffer_Access;
       Keep_Alive_Time : Integer;
