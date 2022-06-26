@@ -22,8 +22,12 @@ package Generic_Protected_Buffers is
    procedure Get (B : Buffer_Access; E : out Element);
    procedure Remove (B : Buffer_Access; E: out Element); -- raise exception
    procedure Remove (B : Buffer_Access; E: out Element; Done : out Boolean);
+   procedure Add (B: Buffer_Access; E : element; Done : out Boolean);
+   procedure Add (B : Buffer_Access; E : element); --raise exception
    procedure Poll (B : Buffer_Access; T : Time; E: out Element); -- raise exception
    procedure Poll (B : Buffer_Access; T : Time; E: out Element; Done : out Boolean);
+   procedure Offer (B : Buffer_Access; T : Time; E : element); --raise exception
+   procedure Offer(B : Buffer_Access; T : Time; E : element; Done : out Boolean);
 
    Full_Buffer_Exception : exception;
    Empty_Buffer_Exception : exception;

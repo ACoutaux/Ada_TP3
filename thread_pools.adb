@@ -53,7 +53,6 @@ package body Thread_Pools is
       Current_Future : Future;
       Current_Callable : Callable_Access;
       Future_Buffer : Buffer_Access;
-      D : Boolean;
    begin
       accept Initialize (F : Future; Buffer : Buffer_Access) do
          Current_Future := F;
@@ -65,8 +64,7 @@ package body Thread_Pools is
 
          --P.Get_Shutdown(S);
          Current_Future.Set_Result(R);
-         Future_Buffer.Get(Current_Future,D);
-         Future_Buffer.Reinit_Done (False);
+         Future_Buffer.Get(Current_Future);
 
          --exit when S;
       end loop;

@@ -40,6 +40,25 @@ package body Generic_Protected_Buffers is
           Done := False;
        end select;
     end Remove;
+
+    procedure Add(B : Buffer_Access; E : element) is
+    begin
+      select
+         B.Put(E);
+      else
+         raise Full_Buffer_Exception;
+      end select;
+    end Add;
+
+    procedure Add (B: Buffer_Access; E : element; Done : out Boolean) is
+    begin
+      select
+         B.Put(E);
+         Done := True;
+      else
+         Done := False;
+      end select;
+    end Add;
     
     procedure Poll (B : Buffer_Access; T : Time; E: out Element) is
     begin
@@ -65,5 +84,26 @@ package body Generic_Protected_Buffers is
           Done := False;
        end select;
     end Poll;
+
+    procedure Offer (B : Buffer_Access; T : Time; E : element) is
+    begin
+      select
+         B.Put(E);
+      or
+         delay until T;
+         raise Full_Buffer_Exception;
+      end select;
+    end Offer;
+
+    procedure Offer (B : Buffer_Access; T : Time; E : element; Done : out Boolean) is
+    begin
+      select
+         B.Put(E);
+         Done := True;
+      or
+         delay until T;
+         raise Full_Buffer_Exception;
+      end select;
+    end Offer;
        
 end Generic_Protected_Buffers;

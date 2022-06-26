@@ -62,17 +62,15 @@ package body Executors is
         if (Done) then
             return F;
         end if;
-        B.Put(F,D);
-        B.Reinit_Done (False);
+        Add(B,F,D);
         if (D) then
             return F;
         end if;
-        B.Get(Pop_F,D);
+        Remove(B,Pop_F,D);
         if (D) then
-            B.Put(F,D);
+            Add(B,F);
             F := Pop_F;
         end if;
-        B.Reinit_Done(False);
         E.Create(F,True,Done);
         return F;
     end submit;
