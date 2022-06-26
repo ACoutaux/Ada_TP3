@@ -1,4 +1,5 @@
 with Future_Protected_Buffers; use Future_Protected_Buffers;
+with Ada.Calendar; use Ada.Calendar;
 
 package body Thread_Pools is
 
@@ -10,7 +11,7 @@ package body Thread_Pools is
       end Init;
 
       procedure Create 
-        (F : Future; Force : Boolean; Done : out Boolean; Buffer : Buffer_Access)
+        (F : Future; Force : Boolean; Done : out Boolean; Buffer : Buffer_Access; Keep_Alive_Time : Duration)
       is
          Thread : Pool_Thread_Access;
       begin
@@ -21,7 +22,7 @@ package body Thread_Pools is
             Thread := new Pool_Thread;
             Size := Size + 1;
             Done := True;
-            Thread.Initialize(F,Buffer);
+            Thread.Initialize(F,Buffer,Keep_Alive_Time);
          end if;
       end Create;
 
@@ -53,10 +54,14 @@ package body Thread_Pools is
       Current_Future : Future;
       Current_Callable : Callable_Access;
       Future_Buffer : Buffer_Access;
+      Keep_Alive_Duration : Duration;
+      Current_time : Time := Clock;
+      Time_to_wait : Time;
    begin
-      accept Initialize (F : Future; Buffer : Buffer_Access) do
+      accept Initialize (F : Future; Buffer : Buffer_Access; Keep_Alive_Time : Duration) do
          Current_Future := F;
          Future_Buffer := Buffer;
+         Keep_Alive_Duration := Keep_Alive_Time;
       end Initialize;
       loop
          Current_Future.Get_Callable (Current_Callable);
@@ -64,7 +69,18 @@ package body Thread_Pools is
 
          --P.Get_Shutdown(S);
          Current_Future.Set_Result(R);
-         Future_Buffer.Get(Current_Future);
+
+         --if (Current_Callable.Period = 0) then
+         --   null;
+         --end if;
+
+         if (Integer(Keep_Alive_Duration) = -1) then 
+
+            Future_Buffer.Get(Current_Future);
+         else
+            Time_to_wait := Current_time + Keep_Alive_Duration;
+            Poll(Future_Buffer,Time_to_wait,Current_Future); 
+         end if;
 
          --exit when S;
       end loop;

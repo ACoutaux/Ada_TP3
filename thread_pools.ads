@@ -10,7 +10,7 @@ package Thread_Pools is
       procedure Shutdown;
 
       procedure Create
-        (F : Future; Force : Boolean; Done : out Boolean; Buffer : Buffer_Access);
+        (F : Future; Force : Boolean; Done : out Boolean; Buffer : Buffer_Access; Keep_Alive_Time : Duration);
       procedure Remove;
 
       procedure Get_Shutdown(S : out Boolean);
@@ -25,7 +25,7 @@ package Thread_Pools is
    type Thread_Pool_Access is access Thread_Pool;
 
    task type Pool_thread is
-      entry Initialize (F: Future; Buffer : Buffer_Access);
+      entry Initialize (F: Future; Buffer : Buffer_Access; Keep_Alive_Time : Duration);
    end Pool_thread;
 
    type Pool_thread_Access is access Pool_thread;

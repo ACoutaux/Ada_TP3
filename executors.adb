@@ -21,10 +21,10 @@ package body Executors is
        end Shutdown;
        
        procedure Create
-         (F : Future; Force : Boolean; Done : out Boolean)
+         (F : Future; Force : Boolean; Done : out Boolean; Keep_Alive_Time : Duration)
        is
        begin
-          Pool.Create(F, Force, Done,Futures);
+          Pool.Create(F, Force, Done,Futures,Keep_Alive_Time);
        end Create;
 
         procedure Get_Pool(P : out Thread_Pool_Access) is 
@@ -42,6 +42,11 @@ package body Executors is
             B := Futures;
         end Get_Buffer;
 
+        procedure Get_Keep_Alive_Time(K : out Integer) is
+        begin
+            K := Keep_Alive_Time;
+        end Get_Keep_Alive_Time;
+
     end Executor;
 
 
@@ -53,11 +58,14 @@ package body Executors is
         P : Thread_Pool_Access;
         B : Buffer_Access;
         D : Boolean;
+        Period :Duration;
+        K : Integer;
     begin
         F.Set_Callable(C);
         F.Set_Completed(False);
         E.Get_Pool(P);
-        E.Create(F, False, Done);
+        E.Get_Keep_Alive_Time(K);
+        E.Create(F, False, Done, Duration(K));
         E.Get_Buffer (B);
         if (Done) then
             return F;
@@ -71,7 +79,7 @@ package body Executors is
             Add(B,F);
             F := Pop_F;
         end if;
-        E.Create(F,True,Done);
+        E.Create(F,True,Done, Duration(K));
         return F;
     end submit;
 end Executors;
