@@ -64,6 +64,8 @@ package body Thread_Pools is
       Time_to_wait : Time;
       Execution_Time : Duration;
       Begin_Time : Time;
+      Keep_Alive_Time_Milli : Float;
+      Period_Milli : Float;
    begin
       accept Initialize (F : Future; Buffer : Buffer_Access; Pool : Thread_Pool_Access; Start_Time : Time) do
          Current_Future := F;
@@ -89,7 +91,8 @@ package body Thread_Pools is
             end if;
 
             Current_time := Clock;
-            delay until(Current_Time + Current_Callable.Period);
+            Period_Milli := Float(Current_Callable.Period);
+            delay until(Current_Time + Duration(Period_Milli));
 
             P.Get_Shutdown (S);
             if (S) then
@@ -107,7 +110,8 @@ package body Thread_Pools is
             end if;
          else
             Current_time := Clock;
-            Time_to_wait := Current_time + Keep_Alive_Duration;
+            Keep_Alive_Time_Milli := Float(Keep_Alive_Duration/1000);
+            Time_to_wait := Current_time + Duration(Keep_Alive_Time_Milli);
             Poll(Future_Buffer,Time_to_wait,Current_Future); 
 
             if (Current_Future = null) then

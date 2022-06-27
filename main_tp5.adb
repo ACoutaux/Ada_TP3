@@ -19,15 +19,11 @@ procedure Main_Tp5 is
     Exec_time : Integer;
 
     My_File : File_Type;
-
     My_Executor : Executor_Access := new Executor;
     My_Thread_Pool : Thread_Pool_Access := new Thread_Pool;
     My_Buffer : Buffer_Access;
-
     Callable : Job_Callable_Access;
-
     F : Future;
-
     Start_Time : Time;
 
 begin
