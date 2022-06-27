@@ -5,18 +5,15 @@ with Futures; use Futures;
 package Executors is
 
    protected type Executor is 
-      procedure Init(F : Buffer_Access; K : Integer; P : Thread_Pool_Access);
+      procedure Init(F : Buffer_Access; P : Thread_Pool_Access);
       procedure Shutdown;
       procedure Create
-        (F : Future; Force : Boolean; Done : out Boolean; Keep_Alive_Time : Duration);
+        (F : Future; Force : Boolean; Thread : out Pool_thread_Access);
       procedure Get_Pool(P : out Thread_Pool_Access);
-      procedure Get_Callable_Result(F : Future; R : out Result_Access);
       procedure Get_Buffer(B : out Buffer_Access);
-      procedure Get_Keep_Alive_Time(K : out Integer);
       
    private
       Futures : Buffer_Access;
-      Keep_Alive_Time : Integer;
       Pool : Thread_Pool_Access;
    end Executor;
 

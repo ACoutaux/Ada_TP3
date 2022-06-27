@@ -1,28 +1,27 @@
 with Future_Protected_Buffers; use Future_Protected_Buffers;
 with Ada.Calendar; use Ada.Calendar;
+with Ada.Text_IO; use Ada.Text_IO;
 
 package body Thread_Pools is
 
    protected body Thread_Pool is
-      procedure Init (C : in Integer; M : in Integer) is
+      procedure Init (C : in Integer; M : in Integer; K : Duration) is
       begin
          Core_Pool_Size := C;
          Max_Pool_Size := M;
+         Keep_Alive_Time := K;
       end Init;
 
       procedure Create 
-        (F : Future; Force : Boolean; Done : out Boolean; Buffer : Buffer_Access; Keep_Alive_Time : Duration)
+        (F : Future; Force : Boolean; Thread : out Pool_thread_Access)
       is
-         Thread : Pool_Thread_Access;
       begin
-         Done := False;
+         Thread := null;
          if (Size < Core_Pool_Size) or else
            (Force and Size < Max_Pool_Size)
          then
-            Thread := new Pool_Thread;
+            Thread := new Pool_Thread ;
             Size := Size + 1;
-            Done := True;
-            Thread.Initialize(F,Buffer,Keep_Alive_Time);
          end if;
       end Create;
 
@@ -45,44 +44,55 @@ package body Thread_Pools is
          S := Shutdown_Activated;
       end Get_Shutdown;
 
+      procedure Get_Keep_Alive_Time(K : out Duration) is
+      begin
+         K := Keep_Alive_Time;
+      end Get_Keep_Alive_Time;
+
    end Thread_Pool;
 
    task body Pool_thread is
       R : Result_Access;
       S : Boolean := False;
-      --P : Thread_Pool_Access;
+      P : Thread_Pool_Access;
       Current_Future : Future;
       Current_Callable : Callable_Access;
       Future_Buffer : Buffer_Access;
       Keep_Alive_Duration : Duration;
-      Current_time : Time := Clock;
+      Current_time : Time;
       Time_to_wait : Time;
    begin
-      accept Initialize (F : Future; Buffer : Buffer_Access; Keep_Alive_Time : Duration) do
+      accept Initialize (F : Future; Buffer : Buffer_Access; Pool : Thread_Pool_Access) do
          Current_Future := F;
          Future_Buffer := Buffer;
-         Keep_Alive_Duration := Keep_Alive_Time;
+         P := Pool;
+         P.Get_Keep_Alive_Time (Keep_Alive_Duration);
+         Put_Line("Thread created");
       end Initialize;
       loop
          Current_Future.Get_Callable (Current_Callable);
          Current_Callable.Run(R);
+         loop --periodic
 
-         --P.Get_Shutdown(S);
-         Current_Future.Set_Result(R);
+            P.Get_Shutdown(S);
+            Current_Future.Set_Result(R);
 
-         --if (Current_Callable.Period = 0) then
-         --   null;
-         --end if;
+            if (Current_Callable.Period = 0.0) then
+               Current_Future.Set_Completed(True);
+               exit;
+            end if;
 
-         if (Integer(Keep_Alive_Duration) = -1) then 
+            if (Integer(Keep_Alive_Duration) = -1) then 
 
-            Future_Buffer.Get(Current_Future);
-         else
-            Time_to_wait := Current_time + Keep_Alive_Duration;
-            Poll(Future_Buffer,Time_to_wait,Current_Future); 
-         end if;
+               Future_Buffer.Get(Current_Future);
+            else
+               Current_time := Clock;
+               Time_to_wait := Current_time + Keep_Alive_Duration;
+               Poll(Future_Buffer,Time_to_wait,Current_Future); 
+            end if;
 
-         --exit when S;
+            exit when S;
+         end loop;
       end loop;
    end Pool_Thread;
 

@@ -4,7 +4,7 @@ package Jobs is
 
    type Job_Result is new Result with null record;
    
-   type Job_Callable is new Periodic_Callable with record
+   type Job_Callable is new Callable with record
       Exec_Time : Duration;
    end record;
 

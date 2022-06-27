@@ -39,8 +39,8 @@ begin
 
     My_Buffer := new G_Buffer(Blocking_Queue_Size);
     -- Init de Thread_Pool  
-    My_Thread_Pool.Init(Core_Pool_Size, Max_Pool_Size);
-    My_Executor.Init(My_Buffer, Keep_Alive_Time, My_Thread_Pool);
+    My_Thread_Pool.Init(Core_Pool_Size, Max_Pool_Size, Duration(Keep_Alive_Time));
+    My_Executor.Init(My_Buffer, My_Thread_Pool);
 
     -- Init des futures
     for i in 1..Job_Table_Size loop
@@ -55,5 +55,6 @@ begin
         F := submit(My_Executor,Callable_Access(Callable));
     end loop;
 
+    Delay(10.0);
     My_Executor.Shutdown;
 end main_tp5;
