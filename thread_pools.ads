@@ -21,7 +21,7 @@ package Thread_Pools is
 
       procedure Create
         (F : Future; Force : Boolean; Thread : out Pool_thread_Access);
-      procedure Remove;
+      procedure Remove (Done : out Boolean);
 
       procedure Get_Shutdown(S : out Boolean);
       procedure Get_Keep_Alive_Time(K : out Duration);

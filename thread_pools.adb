@@ -36,11 +36,13 @@ package body Thread_Pools is
          return Size;
       end Get_Size;
 
-      procedure Remove is
+      procedure Remove (Done : out Boolean) is
       begin
+         Done := False;
          if (Size > Core_Pool_Size)
            or else (Shutdown_Activated)
          then
+            Done := True;
             Size := Size - 1;
          end if;
       end Remove;
@@ -72,6 +74,7 @@ package body Thread_Pools is
       Start_Time : Time;
       Keep_Alive_Time_Milli : duration;
       Period_Milli : Duration;
+      Done : Boolean;
   begin
       accept Initialize (F : Future; Buffer : Buffer_Access; Pool : Thread_Pool_Access; T : Time) do
          Current_Future := F;
@@ -103,26 +106,38 @@ package body Thread_Pools is
             exit when S;
          end loop;
 
+         Current_Future := null;
          if (Integer(Keep_Alive_Duration) = -1) then 
 
-            Current_Future := null;
             Future_Buffer.Get(Current_Future);
-
-            exit when Current_Future = null;
+            if Current_Future = null then
+               P.Remove (Done);
+               exit;
+            end if;
             
          else
-            Current_time := Clock;
-            Keep_Alive_Time_Milli := Keep_Alive_Duration/1000.0;
-            Time_to_wait := Current_time + Keep_Alive_Time_Milli;
-            Poll(Future_Buffer,Time_to_wait,Current_Future); 
-
+            Current_Future := null;
+            while Current_Future = null loop
+               Current_time := Clock;
+               Keep_Alive_Time_Milli := Keep_Alive_Duration/1000.0;
+               Time_to_wait := Current_time + Keep_Alive_Time_Milli;
+               Poll(Future_Buffer,Time_to_wait,Current_Future, Done);
+               if not Done then -- no future
+                  P.Remove (Done); -- complete
+                                   -- (Keep_Alive_Time or Shutdown)
+                  exit when Done;
+               elsif Current_Future = null then
+                  P.Remove(Done); -- shutdown future
+                                  -- complete
+                  exit;
+               end if;
+            end loop;
             exit when Current_Future = null;
          end if;
       end loop;
       Passed_Time := Clock - Start_Time;
       Put("["); Put(Integer(Passed_Time * 1000.0),5); Put("]   ");
       Put_Line("Thread completed");
-      P.Remove;
    end Pool_Thread;
 
 end Thread_Pools;

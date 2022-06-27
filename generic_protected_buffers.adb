@@ -102,7 +102,7 @@ package body Generic_Protected_Buffers is
          Done := True;
       or
          delay until T;
-         raise Full_Buffer_Exception;
+         Done := False;
       end select;
     end Offer;
        
