@@ -1,3 +1,4 @@
+with Ada.Calendar; use Ada.Calendar;
 
 package Futures is
    
@@ -25,6 +26,6 @@ package Futures is
 
    type Future is access Protected_Future;
 
-   Procedure Run(C : Callable; R : out Result_Access);
+   Procedure Run(C : Callable; R : out Result_Access; Time_Begin : Time);
             
 end Futures;

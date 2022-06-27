@@ -1,6 +1,7 @@
 with Future_Protected_Buffers; use Future_Protected_Buffers;
 with Futures; use Futures;
 with Jobs; use Jobs;
+with Ada.Calendar; use Ada.Calendar;
 
 package Thread_Pools is
 
@@ -8,7 +9,7 @@ package Thread_Pools is
    type Thread_Pool_Access is access Thread_Pool;
 
    task type Pool_thread is
-      entry Initialize (F: Future; Buffer : Buffer_Access; Pool : Thread_Pool_Access);
+      entry Initialize (F: Future; Buffer : Buffer_Access; Pool : Thread_Pool_Access; Time_Begin : Time);
    end Pool_thread;
 
    type Pool_thread_Access is access Pool_thread;

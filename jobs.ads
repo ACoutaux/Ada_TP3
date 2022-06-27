@@ -1,4 +1,5 @@
 with Futures; use Futures;
+with Ada.Calendar; use Ada.Calendar;
 
 package Jobs is
 
@@ -10,6 +11,6 @@ package Jobs is
 
    type Job_Callable_Access is access Job_Callable;
 
-   procedure Run (J : Job_Callable; R : out Result_Access);
+   procedure Run (J : Job_Callable; R : out Result_Access; Time_Begin : Time);
 
 end Jobs;

@@ -1,6 +1,7 @@
 with Future_Protected_Buffers; use Future_Protected_Buffers;
 with Thread_Pools; use Thread_Pools;
 with Futures; use Futures;
+with Ada.Calendar; use Ada.Calendar;
 
 package Executors is
 
@@ -19,6 +20,6 @@ package Executors is
 
    type Executor_Access is access Executor;
 
-   function submit(E : Executor_Access; C : Callable_Access) return Future;
+   function submit(E : Executor_Access; C : Callable_Access; Time_Begin: Time) return Future;
 
 end Executors;

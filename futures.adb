@@ -1,3 +1,4 @@
+with Ada.Calendar; use Ada.Calendar;
 
 package body Futures is
 
@@ -30,7 +31,7 @@ package body Futures is
 
    end Protected_Future;
 
-   procedure Run(C : Callable; R : out Result_Access) is
+   procedure Run(C : Callable; R : out Result_Access; Time_Begin : Time) is
    begin
         null;
    end Run;

@@ -1,6 +1,7 @@
 with Future_Protected_Buffers; use Future_Protected_Buffers;
 with Ada.Calendar; use Ada.Calendar;
 with Ada.Text_IO; use Ada.Text_IO;
+with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
 
 package body Thread_Pools is
 
@@ -61,18 +62,23 @@ package body Thread_Pools is
       Keep_Alive_Duration : Duration;
       Current_time : Time;
       Time_to_wait : Time;
+      Execution_Time : Duration;
+      Begin_Time : Time;
    begin
-      accept Initialize (F : Future; Buffer : Buffer_Access; Pool : Thread_Pool_Access) do
+      accept Initialize (F : Future; Buffer : Buffer_Access; Pool : Thread_Pool_Access; Time_Begin : Time) do
          Current_Future := F;
          Future_Buffer := Buffer;
          P := Pool;
          P.Get_Keep_Alive_Time (Keep_Alive_Duration);
+         Execution_Time := Clock - Time_Begin;
+         Put("["); Put(Integer(Execution_Time),1); Put("]   ");
          Put_Line("Thread created");
+         Begin_Time := Time_Begin;
       end Initialize;
       loop
          exit when (Current_Future = null);
          Current_Future.Get_Callable (Current_Callable);
-         Current_Callable.Run(R);
+         Current_Callable.Run(R,Begin_Time);
          loop --periodic
 
             Current_Future.Set_Result(R);

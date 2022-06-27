@@ -5,6 +5,7 @@ with Executors; use Executors;
 with Thread_Pools; use Thread_Pools;
 with Futures; use Futures;
 with Jobs; use Jobs;
+with Ada.Calendar; use Ada.Calendar;
 
 procedure main_tp5 is
 
@@ -26,6 +27,8 @@ procedure main_tp5 is
 
     F : Future;
 
+    Begin_Time : Time;
+
 begin
 
     Open(My_File, In_File, Name => "params_tp5.txt");
@@ -42,17 +45,14 @@ begin
     My_Thread_Pool.Init(Core_Pool_Size, Max_Pool_Size, Duration(Keep_Alive_Time));
     My_Executor.Init(My_Buffer, My_Thread_Pool);
 
+    Begin_Time := Clock;
     -- Init des futures
     for i in 1..Job_Table_Size loop
         Callable := new Job_Callable;
         Get(My_File,Exec_time);
         Callable.Exec_Time := Duration(Exec_time);
         Callable.Period := Duration(Period);
-        Put("Job with exec_time ");
-        Put(Integer(Exec_time),2);
-        Put(" Submitted");
-        New_Line;
-        F := submit(My_Executor,Callable_Access(Callable));
+        F := submit(My_Executor,Callable_Access(Callable),Begin_Time);
     end loop;
 
     Delay(10.0);

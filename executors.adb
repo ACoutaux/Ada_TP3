@@ -38,7 +38,7 @@ package body Executors is
 
 
 
-    function Submit(E : Executor_Access; C : Callable_Access) return Future is
+    function Submit(E : Executor_Access; C : Callable_Access; Time_Begin : Time) return Future is
         F : Future := new Protected_Future;
         Pop_F : Future;
         P : Thread_Pool_Access;
@@ -56,7 +56,7 @@ package body Executors is
         E.Create(F, False, Thread);
         E.Get_Buffer (B);
         if (Thread /= null) then
-            Thread.Initialize (F, B, P);
+            Thread.Initialize (F, B, P, Time_Begin);
             return F;
         end if;
         Add(B,F,Buffer_Not_Full);
@@ -69,7 +69,7 @@ package body Executors is
             F := Pop_F;
         end if;
         E.Create(F,True,Thread);
-        Thread.Initialize (F, B, P);
+        Thread.Initialize (F, B, P, Time_Begin);
         return F;
     end submit;
 end Executors;
