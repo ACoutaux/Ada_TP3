@@ -41,7 +41,6 @@ package body Thread_Pools is
          if (Size > Core_Pool_Size)
            or else (Shutdown_Activated)
          then
-            Put_Line("Thread removed");
             Size := Size - 1;
          end if;
       end Remove;
@@ -68,10 +67,11 @@ package body Thread_Pools is
       Keep_Alive_Duration : Duration;
       Current_time : Time;
       Time_to_wait : Time;
-      Execution_Time : Duration;
+      Passed_Time : Duration;
+      Deadline : Time;
       Start_Time : Time;
-      Keep_Alive_Time_Milli : Float;
-      Period_Milli : Float;
+      Keep_Alive_Time_Milli : duration;
+      Period_Milli : Duration;
   begin
       accept Initialize (F : Future; Buffer : Buffer_Access; Pool : Thread_Pool_Access; T : Time) do
          Current_Future := F;
@@ -79,26 +79,26 @@ package body Thread_Pools is
          Start_Time := T;
          P := Pool;
          P.Get_Keep_Alive_Time (Keep_Alive_Duration);
-         Execution_Time := Clock - Start_Time;
-         Put("["); Put(Integer(Execution_Time * 1000.0),5); Put("]   ");
+         Passed_Time := Clock - Start_Time;
+         Put("["); Put(Integer(Passed_Time * 1000.0),5); Put("]   ");
          Put_Line("Thread created");
       end Initialize;
+      Deadline := Start_Time;
       while (Current_Future /= null) loop
          Current_Future.Get_Callable (Current_Callable);
-         Current_Callable.Run(R,Start_Time);
          loop --periodic
 
+            Current_Callable.Run(R,Start_Time);
             Current_Future.Set_Result(R);
 
             if (Current_Callable.Period = 0.0) then
                Current_Future.Set_Completed(True);
                exit;
             end if;
-
-            Current_time := Clock;
-            Period_Milli := Float(Current_Callable.Period/1000.0);
-            delay until(Current_Time + Duration(Period_Milli));
-
+            Period_Milli := Current_Callable.Period/1000.0;
+            Deadline := Deadline + Period_Milli;
+            delay until Deadline;
+            
             P.Get_Shutdown (S);
             exit when S;
          end loop;
@@ -112,13 +112,15 @@ package body Thread_Pools is
             
          else
             Current_time := Clock;
-            Keep_Alive_Time_Milli := Float(Keep_Alive_Duration/1000);
-            Time_to_wait := Current_time + Duration(Keep_Alive_Time_Milli);
+            Keep_Alive_Time_Milli := Keep_Alive_Duration/1000.0;
+            Time_to_wait := Current_time + Keep_Alive_Time_Milli;
             Poll(Future_Buffer,Time_to_wait,Current_Future); 
 
             exit when Current_Future = null;
          end if;
       end loop;
+      Passed_Time := Clock - Start_Time;
+      Put("["); Put(Integer(Passed_Time * 1000.0),5); Put("]   ");
       Put_Line("Thread completed");
       P.Remove;
    end Pool_Thread;
