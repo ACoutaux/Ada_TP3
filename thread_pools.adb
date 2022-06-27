@@ -63,22 +63,22 @@ package body Thread_Pools is
       Current_time : Time;
       Time_to_wait : Time;
       Execution_Time : Duration;
-      Begin_Time : Time;
+      Start_Time : Time;
    begin
-      accept Initialize (F : Future; Buffer : Buffer_Access; Pool : Thread_Pool_Access; Start_Time : Time) do
+      accept Initialize (F : Future; Buffer : Buffer_Access; Pool : Thread_Pool_Access; T : Time) do
          Current_Future := F;
          Future_Buffer := Buffer;
+         Start_Time := T;
          P := Pool;
          P.Get_Keep_Alive_Time (Keep_Alive_Duration);
          Execution_Time := Clock - Start_Time;
-         Put("["); Put(Integer(Execution_Time),1); Put("]   ");
+         Put("["); Put(Integer(Execution_Time * 1000.0),5); Put("]   ");
          Put_Line("Thread created");
-         Begin_Time := Start_Time;
       end Initialize;
       loop
          exit when (Current_Future = null);
          Current_Future.Get_Callable (Current_Callable);
-         Current_Callable.Run(R,Begin_Time);
+         Current_Callable.Run(R,Start_Time);
          loop --periodic
 
             Current_Future.Set_Result(R);

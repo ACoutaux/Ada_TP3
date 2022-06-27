@@ -7,13 +7,13 @@ package body Jobs is
         Passed_Time : Duration;
     begin
         Passed_Time := Clock - Start_Time;
-        Put("[");Put(Integer(Passed_Time),0);Put("]   ");
+        Put("[");Put(Integer(Passed_Time * 1000.0),5);Put("]   ");
         Put ("Initiate job with exec_time");
         Put (Integer(J.Exec_Time),2);
         New_Line;
         delay(J.Exec_Time);
         Passed_Time := Clock - Start_Time;
-        Put("[");Put(Integer(Passed_Time),0);Put("]   ");
+        Put("[");Put(Integer(Passed_Time * 1000.0),5);Put("]   ");
         Put("Job with exec_time ");
         Put(Integer(J.Exec_Time),2);
         Put(" terminated");
