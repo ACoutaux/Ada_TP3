@@ -30,12 +30,18 @@ package body Thread_Pools is
       begin
          Shutdown_Activated := True;
       end;
+      
+      function Get_Size return Natural is
+      begin
+         return Size;
+      end Get_Size;
 
       procedure Remove is
       begin
          if (Size > Core_Pool_Size)
            or else (Shutdown_Activated)
          then
+            Put_Line("Thread removed");
             Size := Size - 1;
          end if;
       end Remove;
@@ -77,8 +83,7 @@ package body Thread_Pools is
          Put("["); Put(Integer(Execution_Time * 1000.0),5); Put("]   ");
          Put_Line("Thread created");
       end Initialize;
-      loop
-         exit when (Current_Future = null);
+      while (Current_Future /= null) loop
          Current_Future.Get_Callable (Current_Callable);
          Current_Callable.Run(R,Start_Time);
          loop --periodic
@@ -91,13 +96,11 @@ package body Thread_Pools is
             end if;
 
             Current_time := Clock;
-            Period_Milli := Float(Current_Callable.Period);
+            Period_Milli := Float(Current_Callable.Period/1000.0);
             delay until(Current_Time + Duration(Period_Milli));
 
             P.Get_Shutdown (S);
-            if (S) then
-               exit;
-            end if;
+            exit when S;
          end loop;
 
          if (Integer(Keep_Alive_Duration) = -1) then 
@@ -105,23 +108,19 @@ package body Thread_Pools is
             Current_Future := null;
             Future_Buffer.Get(Current_Future);
 
-            if (Current_Future = null) then
-               exit;
-            end if;
+            exit when Current_Future = null;
+            
          else
             Current_time := Clock;
             Keep_Alive_Time_Milli := Float(Keep_Alive_Duration/1000);
             Time_to_wait := Current_time + Duration(Keep_Alive_Time_Milli);
             Poll(Future_Buffer,Time_to_wait,Current_Future); 
 
-            if (Current_Future = null) then
-               exit;
-            end if;
+            exit when Current_Future = null;
          end if;
-
-         Add(Future_Buffer,null);
-         
       end loop;
+      Put_Line("Thread completed");
+      P.Remove;
    end Pool_Thread;
 
 end Thread_Pools;

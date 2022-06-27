@@ -53,5 +53,5 @@ begin
     end loop;
 
     Delay(10.0);
-    My_Executor.Shutdown;
+    Shutdown (My_Executor);
 end main_tp5;

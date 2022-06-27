@@ -25,6 +25,8 @@ package Thread_Pools is
 
       procedure Get_Shutdown(S : out Boolean);
       procedure Get_Keep_Alive_Time(K : out Duration);
+      
+      function Get_Size return Natural;
 
    private
       Core_Pool_Size : Natural;
@@ -34,7 +36,4 @@ package Thread_Pools is
       Keep_Alive_Time : Duration;
    end Thread_Pool;
 
-
-
-   
 end Thread_Pools;

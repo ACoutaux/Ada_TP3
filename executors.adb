@@ -2,7 +2,8 @@ with Future_Protected_Buffers; use Future_Protected_Buffers;
 with Thread_Pools; use Thread_Pools;
 with Futures; use Futures;
 with Jobs; use Jobs;
-
+with Ada.Text_IO; use Ada.Text_IO;
+                  
 package body Executors is
 
     protected body Executor is
@@ -12,11 +13,6 @@ package body Executors is
           Pool := P;
        end Init;
               
-       procedure Shutdown is
-       begin
-            Pool.Shutdown;
-       end Shutdown;
-       
        procedure Create
          (F : Future; Force : Boolean; Thread : out Pool_thread_Access)
        is
@@ -68,5 +64,21 @@ package body Executors is
         E.Create(F, True, T);
         T.Initialize (F, B, P, Start_Time);
         return F;
-    end submit;
+    end Submit;
+    
+    procedure Shutdown (E : Executor_Access) is
+       Shutdown_Future : Future := null;
+       Done : Boolean;
+       P : Thread_Pool_Access;
+       B : Buffer_Access;
+    begin
+       E.Get_Pool(P);
+       P.Shutdown;
+       E.Get_Buffer(B);
+       while P.Get_Size > 0 loop
+          Add (B, Shutdown_Future, Done);
+          delay 0.1;
+       end loop;
+    end Shutdown;
+
 end Executors;

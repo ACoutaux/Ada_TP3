@@ -7,7 +7,6 @@ package Executors is
 
    protected type Executor is 
       procedure Init(F : Buffer_Access; P : Thread_Pool_Access);
-      procedure Shutdown;
       procedure Create
         (F : Future; Force : Boolean; Thread : out Pool_thread_Access);
       procedure Get_Pool(P : out Thread_Pool_Access);
@@ -20,6 +19,8 @@ package Executors is
 
    type Executor_Access is access Executor;
 
-   function submit(E : Executor_Access; C : Callable_Access; Start_Time: Time) return Future;
+   function Submit(E : Executor_Access; C : Callable_Access; Start_Time: Time) return Future;
+   
+   procedure Shutdown (E : Executor_Access);
 
 end Executors;
