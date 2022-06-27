@@ -70,11 +70,11 @@ package body Thread_Pools is
          Put_Line("Thread created");
       end Initialize;
       loop
+         exit when (Current_Future = null);
          Current_Future.Get_Callable (Current_Callable);
          Current_Callable.Run(R);
          loop --periodic
 
-            P.Get_Shutdown(S);
             Current_Future.Set_Result(R);
 
             if (Current_Callable.Period = 0.0) then
@@ -82,17 +82,35 @@ package body Thread_Pools is
                exit;
             end if;
 
-            if (Integer(Keep_Alive_Duration) = -1) then 
+            Current_time := Clock;
+            delay until(Current_Time + Current_Callable.Period);
 
-               Future_Buffer.Get(Current_Future);
-            else
-               Current_time := Clock;
-               Time_to_wait := Current_time + Keep_Alive_Duration;
-               Poll(Future_Buffer,Time_to_wait,Current_Future); 
+            P.Get_Shutdown (S);
+            if (S) then
+               exit;
             end if;
-
-            exit when S;
          end loop;
+
+         if (Integer(Keep_Alive_Duration) = -1) then 
+
+            Current_Future := null;
+            Future_Buffer.Get(Current_Future);
+
+            if (Current_Future = null) then
+               exit;
+            end if;
+         else
+            Current_time := Clock;
+            Time_to_wait := Current_time + Keep_Alive_Duration;
+            Poll(Future_Buffer,Time_to_wait,Current_Future); 
+
+            if (Current_Future = null) then
+               exit;
+            end if;
+         end if;
+
+         Add(Future_Buffer,null);
+         
       end loop;
    end Pool_Thread;
 
