@@ -36,40 +36,37 @@ package body Executors is
 
     end Executor;
 
-
-
-    function Submit(E : Executor_Access; C : Callable_Access; Time_Begin : Time) return Future is
+    function Submit(E : Executor_Access; C : Callable_Access; Start_Time : Time) return Future is
         F : Future := new Protected_Future;
-        Pop_F : Future;
+        Prev_F : Future;
         P : Thread_Pool_Access;
         B : Buffer_Access;
         Buffer_Not_Full : Boolean;
         Buffer_Not_Empty : Boolean;
-        Period :Duration;
         K : Duration;
-        Thread : Pool_thread_Access;
+        T : Pool_Thread_Access;
     begin
         F.Set_Callable(C);
         F.Set_Completed(False);
         E.Get_Pool(P);
         P.Get_Keep_Alive_Time(K);
-        E.Create(F, False, Thread);
+        E.Create(F, False, T);
         E.Get_Buffer (B);
-        if (Thread /= null) then
-            Thread.Initialize (F, B, P, Time_Begin);
+        if (T /= null) then
+            T.Initialize (F, B, P, Start_Time);
             return F;
         end if;
-        Add(B,F,Buffer_Not_Full);
+        Add(B, F, Buffer_Not_Full);
         if (Buffer_Not_Full) then
             return F;
         end if;
-        Remove(B,Pop_F,Buffer_Not_Empty);
+        Remove(B, Prev_F, Buffer_Not_Empty);
         if (Buffer_Not_Empty) then
-            Add(B,F);
-            F := Pop_F;
+            Add(B, F);
+            F := Prev_F;
         end if;
-        E.Create(F,True,Thread);
-        Thread.Initialize (F, B, P, Time_Begin);
+        E.Create(F, True, T);
+        T.Initialize (F, B, P, Start_Time);
         return F;
     end submit;
 end Executors;

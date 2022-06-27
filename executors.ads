@@ -20,6 +20,6 @@ package Executors is
 
    type Executor_Access is access Executor;
 
-   function submit(E : Executor_Access; C : Callable_Access; Time_Begin: Time) return Future;
+   function submit(E : Executor_Access; C : Callable_Access; Start_Time: Time) return Future;
 
 end Executors;

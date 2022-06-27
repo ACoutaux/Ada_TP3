@@ -11,6 +11,6 @@ package Jobs is
 
    type Job_Callable_Access is access Job_Callable;
 
-   procedure Run (J : Job_Callable; R : out Result_Access; Time_Begin : Time);
+   procedure Run (J : Job_Callable; R : out Result_Access; Start_Time : Time);
 
 end Jobs;

@@ -65,15 +65,15 @@ package body Thread_Pools is
       Execution_Time : Duration;
       Begin_Time : Time;
    begin
-      accept Initialize (F : Future; Buffer : Buffer_Access; Pool : Thread_Pool_Access; Time_Begin : Time) do
+      accept Initialize (F : Future; Buffer : Buffer_Access; Pool : Thread_Pool_Access; Start_Time : Time) do
          Current_Future := F;
          Future_Buffer := Buffer;
          P := Pool;
          P.Get_Keep_Alive_Time (Keep_Alive_Duration);
-         Execution_Time := Clock - Time_Begin;
+         Execution_Time := Clock - Start_Time;
          Put("["); Put(Integer(Execution_Time),1); Put("]   ");
          Put_Line("Thread created");
-         Begin_Time := Time_Begin;
+         Begin_Time := Start_Time;
       end Initialize;
       loop
          exit when (Current_Future = null);

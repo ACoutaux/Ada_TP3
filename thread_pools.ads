@@ -9,7 +9,7 @@ package Thread_Pools is
    type Thread_Pool_Access is access Thread_Pool;
 
    task type Pool_thread is
-      entry Initialize (F: Future; Buffer : Buffer_Access; Pool : Thread_Pool_Access; Time_Begin : Time);
+      entry Initialize (F: Future; Buffer : Buffer_Access; Pool : Thread_Pool_Access; Start_Time : Time);
    end Pool_thread;
 
    type Pool_thread_Access is access Pool_thread;

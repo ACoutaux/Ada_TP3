@@ -31,7 +31,7 @@ package body Futures is
 
    end Protected_Future;
 
-   procedure Run(C : Callable; R : out Result_Access; Time_Begin : Time) is
+   procedure Run(C : Callable; R : out Result_Access; Start_Time : Time) is
    begin
         null;
    end Run;
